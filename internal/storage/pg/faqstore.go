@@ -12,6 +12,7 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/jmoiron/sqlx"
+	"github.com/labstack/gommon/log"
 )
 
 type FaqStore struct {
@@ -133,7 +134,7 @@ func (s *FaqStore) List(ctx context.Context, filters dto.FaqEntryList) ([]*entit
 	if err := s.db.SelectContext(ctx, &entries, query, args...); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			qlog.Debug("faq entries not found")
-			return nil, 0, storage.ErrNoFaqEntry
+			return entries, 0, nil
 		}
 		qlog.Warn("cannot query", sl.Err(err))
 		return nil, 0, err
@@ -146,13 +147,32 @@ func (s *FaqStore) List(ctx context.Context, filters dto.FaqEntryList) ([]*entit
 		log.Warn("error with building query", sl.Err(err))
 		return nil, 0, err
 	}
-	var total uint64
-	if err := s.db.QueryRow(query, args...).Scan(&total); err != nil {
-		log.Warn("cannot query count sql", sl.Err(err))
+
+	total, err := s.Count(ctx)
+	if err != nil {
+		qlog.Warn("cannot count rows", sl.Err(err))
 		return nil, 0, err
 	}
 
 	return entries, total, nil
+}
+
+func (s *FaqStore) Count(ctx context.Context) (uint64, error) {
+	query, args, err := squirrel.
+		Select("COUNT(*)").
+		From(faqTable).
+		ToSql()
+	if err != nil {
+		log.Warn("error with building query", sl.Err(err))
+		return 0, err
+	}
+	var total uint64
+	if err := s.db.QueryRow(query, args...).Scan(&total); err != nil {
+		log.Warn("cannot query count sql", sl.Err(err))
+		return 0, err
+	}
+
+	return total, nil
 }
 
 func (s *FaqStore) Update(ctx context.Context, updated *dto.FaqEntryUpdate) error {
