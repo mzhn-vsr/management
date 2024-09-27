@@ -12,7 +12,7 @@ FROM alpine
 RUN apk update --no-cache
 WORKDIR /app
 COPY --from=builder /app /app
-COPY --from=builder /migrator /migrator
+COPY --from=builder /app /migrator
 
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.12.1/wait /app/wait
 RUN chmod +x /app/wait

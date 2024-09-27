@@ -107,11 +107,11 @@ func (s *FaqStore) List(ctx context.Context, filters dto.FaqEntryList) ([]*entit
 		PlaceholderFormat(squirrel.Dollar)
 
 	if filters.Limit != nil {
-		builder.Limit(uint64(*filters.Limit))
+		builder = builder.Limit(uint64(*filters.Limit))
 	}
 
 	if filters.Offset != nil {
-		builder.Offset(uint64(*filters.Offset))
+		builder = builder.Offset(uint64(*filters.Offset))
 	}
 
 	query, args, err := builder.
