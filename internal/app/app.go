@@ -11,6 +11,7 @@ import (
 
 	"mzhn/management/internal/config"
 	"mzhn/management/internal/handlers"
+	"mzhn/management/internal/services/chatservice"
 	"mzhn/management/internal/services/faqservice"
 
 	"github.com/labstack/echo/v4"
@@ -21,14 +22,16 @@ type App struct {
 	app *echo.Echo
 	cfg *config.Config
 
-	faqsvc *faqservice.FaqService
+	faqsvc  *faqservice.FaqService
+	chatsvc *chatservice.ChatService
 }
 
-func newApp(cfg *config.Config, faqsvc *faqservice.FaqService) *App {
+func newApp(cfg *config.Config, faqsvc *faqservice.FaqService, chatsvc *chatservice.ChatService) *App {
 	return &App{
-		app:    echo.New(),
-		cfg:    cfg,
-		faqsvc: faqsvc,
+		app:     echo.New(),
+		cfg:     cfg,
+		faqsvc:  faqsvc,
+		chatsvc: chatsvc,
 	}
 }
 
@@ -46,6 +49,8 @@ func (a *App) initApp() {
 	a.app.GET("/faq", handlers.ListFaq(a.faqsvc))
 	a.app.GET("/faq/:id", handlers.FindFaq(a.faqsvc))
 	a.app.DELETE("/faq/:id", handlers.DeleteFaq(a.faqsvc))
+
+	a.app.POST("/predict", handlers.Predict(a.chatsvc))
 }
 
 func (a *App) Run() {

@@ -11,8 +11,13 @@ import (
 	"github.com/jmoiron/sqlx"
 	"log/slog"
 	"mzhn/management/internal/config"
+	"mzhn/management/internal/lib/logger/sl"
+	"mzhn/management/internal/services/chatservice"
 	"mzhn/management/internal/services/faqservice"
+	"mzhn/management/internal/storage/chatapi"
+	"mzhn/management/internal/storage/classifierapi"
 	"mzhn/management/internal/storage/pg"
+	"net/http"
 )
 
 import (
@@ -29,7 +34,20 @@ func New() (*App, func(), error) {
 	}
 	faqStore := pg.NewFaqStore(db)
 	faqService := faqservice.New(faqStore)
-	app := newApp(configConfig, faqService)
+	chatApi, err := connectToChatService(configConfig)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	chatService := chatapi.New(chatApi)
+	classifierApi, err := connectToClassifyService(configConfig)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	classifierapiClassifierApi := classifierapi.New(classifierApi)
+	chatserviceChatService := chatservice.New(chatService, classifierapiClassifierApi)
+	app := newApp(configConfig, faqService, chatserviceChatService)
 	return app, func() {
 		cleanup()
 	}, nil
@@ -54,10 +72,36 @@ func initPG(cfg *config.Config) (*sqlx.DB, func(), error) {
 	slog.Info("send ping to database")
 
 	if err := db.Ping(); err != nil {
-		slog.Error("failed to connect to database", slog.String("err", err.Error()), slog.String("conn", cs))
+		slog.Error("failed to connect to database", sl.Err(err), slog.String("conn", cs))
 		return nil, func() { db.Close() }, err
 	}
 	slog.Info("connected to database", slog.String("conn", cs))
 
 	return db, func() { db.Close() }, nil
+}
+
+func connectToChatService(cfg *config.Config) (*config.ChatApi, error) {
+	url := cfg.ChatService.Url
+	slog.Info("checking chat service health", slog.String("url", url))
+	resp, err := http.Head(url)
+	if err != nil {
+		slog.Error("error with chat service", sl.Err(err))
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	return &cfg.ChatService, nil
+}
+
+func connectToClassifyService(cfg *config.Config) (*config.ClassifierApi, error) {
+	url := cfg.ClassifierApi.Url
+	slog.Info("checking classifier api health", slog.String("url", url))
+	resp, err := http.Head(url)
+	if err != nil {
+		slog.Error("error with classifier api", sl.Err(err))
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	return &cfg.ClassifierApi, nil
 }

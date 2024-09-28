@@ -26,15 +26,25 @@ type Pg struct {
 	Name string `env:"PG_NAME" env-required:"true"`
 }
 
+type ChatApi struct {
+	Url string `env:"CHAT_SERVICE_URL" env-required:"true"`
+}
+
+type ClassifierApi struct {
+	Url string `env:"CLASSIFIER_API_URL" env-required:"true"`
+}
+
 type CORS struct {
-	Origins string `env:"CORS_ORIGINS" env-required env-description:"Allowed origins (etc http://localhost:3000,http://localhost:4000)"`
+	Origins string `env:"CORS_ORIGINS" env-required:"true" env-description:"Allowed origins (etc http://localhost:3000,http://localhost:4000)"`
 }
 
 type Config struct {
-	Env  string `env:"ENV" env-default:"local"`
-	App  App
-	Pg   Pg
-	CORS CORS
+	Env           string `env:"ENV" env-default:"local"`
+	App           App
+	Pg            Pg
+	CORS          CORS
+	ChatService   ChatApi
+	ClassifierApi ClassifierApi
 }
 
 func New() *Config {
