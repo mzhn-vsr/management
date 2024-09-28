@@ -52,9 +52,8 @@ func (api *ClassifierApi) Classify(ctx context.Context, input string) (*entity.C
 	defer resp.Body.Close()
 
 	var res struct {
-		Class1     string `json:"class_1"`
-		Class2     string `json:"class_2"`
-		Prediction string `json:"prediction"`
+		Class1 string `json:"prediction"`
+		Class2 string `json:"class_2"`
 	}
 
 	resBody, err := io.ReadAll(resp.Body)
@@ -69,7 +68,7 @@ func (api *ClassifierApi) Classify(ctx context.Context, input string) (*entity.C
 	log.Debug("response body unmarshal", slog.Any("body", res))
 
 	return &entity.ClassifierResponse{
-		Class1: res.Prediction,
+		Class1: res.Class1,
 		Class2: res.Class2,
 	}, nil
 }

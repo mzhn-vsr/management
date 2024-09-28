@@ -1,6 +1,6 @@
 services:
-  user-service:
-    container_name: mzhn-auth-service
+  app:
+    container_name: mzhn-app
     build:
       context: .
     env_file:

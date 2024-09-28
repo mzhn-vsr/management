@@ -13,18 +13,6 @@ services:
     ports:
       - ${PG_PORT}:5432
 
-  redis:
-    image: redis:7.2.4-alpine
-    restart: always
-    ports:
-      - "${REDIS_PORT}:6379"
-    env_file:
-      - .env
-    volumes:
-      - redis-data:/data
-
 volumes:
   pg-data:
     name: mzhn-auth-pg
-  redis-data:
-    name: mzhn-auth-redis
