@@ -51,6 +51,23 @@ func (svc *ChatService) Invoke(ctx context.Context, input string) (*entity.ChatI
 		return nil, err
 	}
 
+	return &entity.ChatInvokeAnswer{
+		Answer: answer.Answer,
+		Class1: classify.Output.Class1,
+		Class2: classify.Output.Class2,
+	}, nil
+}
+
+func (svc *ChatService) Predicate(ctx context.Context, input string) (*entity.ChatInvokeAnswer, error) {
+	log := svc.logger.With(slog.String("method", "Predicate"))
+
+	log.Debug("invoking chat message", slog.String("input", input))
+	answer, err := svc.chat.Invoke(ctx, input)
+	if err != nil {
+		log.Warn("cannot invoke chat message", sl.Err(err))
+		return nil, err
+	}
+
 	log.Debug("saving message")
 	id, err := svc.saver.Save(ctx, input, answer.Answer)
 	if err != nil {
@@ -61,7 +78,5 @@ func (svc *ChatService) Invoke(ctx context.Context, input string) (*entity.ChatI
 	return &entity.ChatInvokeAnswer{
 		Id:     id,
 		Answer: answer.Answer,
-		Class1: classify.Output.Class1,
-		Class2: classify.Output.Class2,
 	}, nil
 }
