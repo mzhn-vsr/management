@@ -9,7 +9,7 @@ import (
 func Predict(cs *chatservice.ChatService) echo.HandlerFunc {
 
 	type request struct {
-		Input string `json:"input"`
+		Input string `json:"question"`
 	}
 
 	return func(c echo.Context) error {

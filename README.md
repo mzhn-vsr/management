@@ -21,7 +21,7 @@ docker compose up --build
 `POST /predict`
 ```json
 {
-	"input":"Как узнать версию приложения студия RUTUBE"
+	"question":"Как узнать версию приложения студия RUTUBE"
 }
 ```
 ```json
