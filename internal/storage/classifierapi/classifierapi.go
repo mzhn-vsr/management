@@ -30,10 +30,10 @@ func (api *ClassifierApi) Classify(ctx context.Context, input string) (*entity.C
 	log := api.logger.With(slog.String("method", "Classify"))
 
 	var req struct {
-		Answer string `json:"answer"`
+		Input string `json:"input"`
 	}
 
-	req.Answer = input
+	req.Input = input
 
 	log.Debug("Marshaling json request", slog.Any("req", req))
 	body, err := json.Marshal(req)
@@ -42,7 +42,7 @@ func (api *ClassifierApi) Classify(ctx context.Context, input string) (*entity.C
 		return nil, err
 	}
 
-	endpoint := fmt.Sprintf("%s/predict", api.url)
+	endpoint := fmt.Sprintf("%s/classifier/invoke", api.url)
 	log.Debug("sending post request", slog.String("endpoint", endpoint), slog.Any("req", req))
 	resp, err := http.Post(endpoint, "application/json", bytes.NewReader(body))
 	if err != nil {
@@ -51,10 +51,7 @@ func (api *ClassifierApi) Classify(ctx context.Context, input string) (*entity.C
 	}
 	defer resp.Body.Close()
 
-	var res struct {
-		Class1 string `json:"prediction"`
-		Class2 string `json:"class_2"`
-	}
+	var res entity.ClassifierResponse
 
 	resBody, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -67,8 +64,5 @@ func (api *ClassifierApi) Classify(ctx context.Context, input string) (*entity.C
 	}
 	log.Debug("response body unmarshal", slog.Any("body", res))
 
-	return &entity.ClassifierResponse{
-		Class1: res.Class1,
-		Class2: res.Class2,
-	}, nil
+	return &res, nil
 }

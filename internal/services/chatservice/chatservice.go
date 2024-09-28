@@ -47,7 +47,7 @@ func (svc *ChatService) Invoke(ctx context.Context, input string) (*entity.ChatI
 
 	return &entity.ChatInvokeAnswer{
 		Answer: answer.Answer,
-		Class1: classify.Class1,
-		Class2: classify.Class2,
+		Class1: classify.Output.Class1,
+		Class2: classify.Output.Class2,
 	}, nil
 }
