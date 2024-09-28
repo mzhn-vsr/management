@@ -17,7 +17,6 @@ import (
 	"mzhn/management/internal/storage/chatapi"
 	"mzhn/management/internal/storage/classifierapi"
 	"mzhn/management/internal/storage/pg"
-	"net/http"
 )
 
 import (
@@ -81,27 +80,9 @@ func initPG(cfg *config.Config) (*sqlx.DB, func(), error) {
 }
 
 func connectToChatService(cfg *config.Config) (*config.ChatApi, error) {
-	url := cfg.ChatService.Url
-	slog.Info("checking chat service health", slog.String("url", url))
-	resp, err := http.Head(url)
-	if err != nil {
-		slog.Error("error with chat service", sl.Err(err))
-		return nil, err
-	}
-	defer resp.Body.Close()
-
 	return &cfg.ChatService, nil
 }
 
 func connectToClassifyService(cfg *config.Config) (*config.ClassifierApi, error) {
-	url := cfg.ClassifierApi.Url
-	slog.Info("checking classifier api health", slog.String("url", url))
-	resp, err := http.Head(url)
-	if err != nil {
-		slog.Error("error with classifier api", sl.Err(err))
-		return nil, err
-	}
-	defer resp.Body.Close()
-
 	return &cfg.ClassifierApi, nil
 }
