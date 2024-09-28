@@ -17,6 +17,7 @@ import (
 	"mzhn/management/internal/services/feedbackservice"
 	"mzhn/management/internal/storage/chatapi"
 	"mzhn/management/internal/storage/classifierapi"
+	"mzhn/management/internal/storage/faissapi"
 	"mzhn/management/internal/storage/pg"
 )
 
@@ -34,7 +35,13 @@ func New() (*App, func(), error) {
 		return nil, nil, err
 	}
 	faqStore := pg.NewFaqStore(db)
-	faqService := faqservice.New(faqStore)
+	faissApi, err := connectToFaissApi(configConfig)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	faissapiFaissApi := faissapi.New(faissApi)
+	faqService := faqservice.New(faqStore, faissapiFaissApi)
 	chatApi, err := connectToChatService(configConfig)
 	if err != nil {
 		cleanup()
@@ -89,4 +96,8 @@ func connectToChatService(cfg *config.Config) (*config.ChatApi, error) {
 
 func connectToClassifyService(cfg *config.Config) (*config.ClassifierApi, error) {
 	return &cfg.ClassifierApi, nil
+}
+
+func connectToFaissApi(cfg *config.Config) (*config.FaissApi, error) {
+	return &cfg.FaissApi, nil
 }

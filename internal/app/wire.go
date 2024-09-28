@@ -14,6 +14,7 @@ import (
 	"mzhn/management/internal/services/feedbackservice"
 	"mzhn/management/internal/storage/chatapi"
 	"mzhn/management/internal/storage/classifierapi"
+	"mzhn/management/internal/storage/faissapi"
 	"mzhn/management/internal/storage/pg"
 
 	"github.com/google/wire"
@@ -33,13 +34,17 @@ func New() (*App, func(), error) {
 		pg.NewFaqStore,
 		chatapi.New,
 		classifierapi.New,
+		faissapi.New,
 
 		initPG,
 		connectToChatService,
 		connectToClassifyService,
+		connectToFaissApi,
 		config.New,
 
 		wire.Bind(new(faqservice.FaqStore), new(*pg.FaqStore)),
+		wire.Bind(new(faqservice.FaissRepo), new(*faissapi.FaissApi)),
+
 		wire.Bind(new(chatservice.ChatRepository), new(*chatapi.ChatService)),
 		wire.Bind(new(chatservice.ClassifierRepository), new(*classifierapi.ClassifierApi)),
 
@@ -83,4 +88,8 @@ func connectToChatService(cfg *config.Config) (*config.ChatApi, error) {
 
 func connectToClassifyService(cfg *config.Config) (*config.ClassifierApi, error) {
 	return &cfg.ClassifierApi, nil
+}
+
+func connectToFaissApi(cfg *config.Config) (*config.FaissApi, error) {
+	return &cfg.FaissApi, nil
 }

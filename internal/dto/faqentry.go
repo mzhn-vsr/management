@@ -7,6 +7,11 @@ type FaqEntryCreate struct {
 	Classifier2 *string `json:"classifier2,omitempty"`
 }
 
+type FaqFaissCreate struct {
+	Id string `json:"id"`
+	FaqEntryCreate
+}
+
 type FaqEntryUpdate struct {
 	Id          string  `json:"id"`
 	Question    *string `json:"question"`

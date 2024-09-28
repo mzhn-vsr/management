@@ -34,6 +34,10 @@ type ClassifierApi struct {
 	Url string `env:"CLASSIFIER_API_URL" env-required:"true"`
 }
 
+type FaissApi struct {
+	Url string `env:"FAISS_API_URL" env-required:"true"`
+}
+
 type CORS struct {
 	Origins string `env:"CORS_ORIGINS" env-required:"true" env-description:"Allowed origins (etc http://localhost:3000,http://localhost:4000)"`
 }
@@ -45,6 +49,7 @@ type Config struct {
 	CORS          CORS
 	ChatService   ChatApi
 	ClassifierApi ClassifierApi
+	FaissApi      FaissApi
 }
 
 func New() *Config {
