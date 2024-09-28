@@ -15,6 +15,10 @@ import (
 	"mzhn/management/internal/services/faqservice"
 	"mzhn/management/internal/services/feedbackservice"
 
+	_ "mzhn/management/docs"
+
+	echoSwagger "github.com/swaggo/echo-swagger"
+
 	"github.com/labstack/echo/v4"
 	emw "github.com/labstack/echo/v4/middleware"
 )
@@ -39,6 +43,7 @@ func newApp(cfg *config.Config, faqsvc *faqservice.FaqService, chatsvc *chatserv
 }
 
 func (a *App) initApp() {
+	a.app.GET("/swagger/*", echoSwagger.WrapHandler)
 	a.app.Use(emw.Logger())
 	a.app.Use(emw.CORSWithConfig(emw.CORSConfig{
 		AllowOrigins:     strings.Split(a.cfg.CORS.Origins, ","),
