@@ -13,6 +13,7 @@ RUN apk update --no-cache
 WORKDIR /app
 COPY --from=builder /app /app
 COPY --from=builder /app /migrator
+COPY ./docs ./docs
 
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.12.1/wait /app/wait
 RUN chmod +x /app/wait
