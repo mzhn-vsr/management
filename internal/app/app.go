@@ -13,6 +13,7 @@ import (
 	"mzhn/management/internal/handlers"
 	"mzhn/management/internal/services/chatservice"
 	"mzhn/management/internal/services/faqservice"
+	"mzhn/management/internal/services/feedbackservice"
 
 	"github.com/labstack/echo/v4"
 	emw "github.com/labstack/echo/v4/middleware"
@@ -22,16 +23,18 @@ type App struct {
 	app *echo.Echo
 	cfg *config.Config
 
-	faqsvc  *faqservice.FaqService
-	chatsvc *chatservice.ChatService
+	faqsvc      *faqservice.FaqService
+	chatsvc     *chatservice.ChatService
+	feedbacksvc *feedbackservice.FeedbackService
 }
 
-func newApp(cfg *config.Config, faqsvc *faqservice.FaqService, chatsvc *chatservice.ChatService) *App {
+func newApp(cfg *config.Config, faqsvc *faqservice.FaqService, chatsvc *chatservice.ChatService, fdsvc *feedbackservice.FeedbackService) *App {
 	return &App{
-		app:     echo.New(),
-		cfg:     cfg,
-		faqsvc:  faqsvc,
-		chatsvc: chatsvc,
+		app:         echo.New(),
+		cfg:         cfg,
+		faqsvc:      faqsvc,
+		chatsvc:     chatsvc,
+		feedbacksvc: fdsvc,
 	}
 }
 
@@ -51,6 +54,9 @@ func (a *App) initApp() {
 	a.app.DELETE("/faq/:id", handlers.DeleteFaq(a.faqsvc))
 
 	a.app.POST("/predict", handlers.Predict(a.chatsvc))
+
+	a.app.PUT("/feedback", handlers.SendFeedback(a.feedbacksvc))
+	a.app.GET("/feedback", handlers.FeedbackStats(a.feedbacksvc))
 }
 
 func (a *App) Run() {

@@ -7,6 +7,10 @@ import (
 	"mzhn/management/internal/lib/logger/sl"
 )
 
+type MessageSaver interface {
+	Save(ctx context.Context, q, a string) (id string, err error)
+}
+
 type ChatRepository interface {
 	Invoke(ctx context.Context, input string) (*entity.ChatInvokeOutput, error)
 }
@@ -18,13 +22,15 @@ type ClassifierRepository interface {
 type ChatService struct {
 	chat       ChatRepository
 	classifier ClassifierRepository
+	saver      MessageSaver
 	logger     *slog.Logger
 }
 
-func New(chat ChatRepository, classifier ClassifierRepository) *ChatService {
+func New(chat ChatRepository, classifier ClassifierRepository, saver MessageSaver) *ChatService {
 	return &ChatService{
 		chat:       chat,
 		classifier: classifier,
+		saver:      saver,
 		logger:     slog.Default().With(slog.String("struct", "ChatService")),
 	}
 }
@@ -45,7 +51,15 @@ func (svc *ChatService) Invoke(ctx context.Context, input string) (*entity.ChatI
 		return nil, err
 	}
 
+	log.Debug("saving message")
+	id, err := svc.saver.Save(ctx, input, answer.Answer)
+	if err != nil {
+		log.Error("cannot save message", sl.Err(err))
+		return nil, err
+	}
+
 	return &entity.ChatInvokeAnswer{
+		Id:     id,
 		Answer: answer.Answer,
 		Class1: classify.Output.Class1,
 		Class2: classify.Output.Class2,

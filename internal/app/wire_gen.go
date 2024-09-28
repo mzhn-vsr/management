@@ -14,6 +14,7 @@ import (
 	"mzhn/management/internal/lib/logger/sl"
 	"mzhn/management/internal/services/chatservice"
 	"mzhn/management/internal/services/faqservice"
+	"mzhn/management/internal/services/feedbackservice"
 	"mzhn/management/internal/storage/chatapi"
 	"mzhn/management/internal/storage/classifierapi"
 	"mzhn/management/internal/storage/pg"
@@ -45,8 +46,10 @@ func New() (*App, func(), error) {
 		return nil, nil, err
 	}
 	classifierapiClassifierApi := classifierapi.New(classifierApi)
-	chatserviceChatService := chatservice.New(chatService, classifierapiClassifierApi)
-	app := newApp(configConfig, faqService, chatserviceChatService)
+	feedbackStore := pg.NewFeedbackStore(db)
+	chatserviceChatService := chatservice.New(chatService, classifierapiClassifierApi, feedbackStore)
+	feedbackService := feedbackservice.New(feedbackStore, feedbackStore)
+	app := newApp(configConfig, faqService, chatserviceChatService, feedbackService)
 	return app, func() {
 		cleanup()
 	}, nil

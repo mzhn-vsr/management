@@ -12,6 +12,12 @@ func Predict(cs *chatservice.ChatService) echo.HandlerFunc {
 		Input string `json:"question"`
 	}
 
+	type response struct {
+		A  string `json:"answer"`
+		C1 string `json:"class_1"`
+		C2 string `json:"class_2"`
+	}
+
 	return func(c echo.Context) error {
 		var req request
 
@@ -29,6 +35,12 @@ func Predict(cs *chatservice.ChatService) echo.HandlerFunc {
 			})
 		}
 
-		return c.JSON(200, output)
+		c.Response().Header().Add("feedbackId", output.Id)
+
+		return c.JSON(200, &response{
+			A:  output.Answer,
+			C1: output.Class1,
+			C2: output.Class2,
+		})
 	}
 }

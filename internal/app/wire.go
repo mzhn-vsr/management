@@ -11,6 +11,7 @@ import (
 	"mzhn/management/internal/lib/logger/sl"
 	"mzhn/management/internal/services/chatservice"
 	"mzhn/management/internal/services/faqservice"
+	"mzhn/management/internal/services/feedbackservice"
 	"mzhn/management/internal/storage/chatapi"
 	"mzhn/management/internal/storage/classifierapi"
 	"mzhn/management/internal/storage/pg"
@@ -26,7 +27,9 @@ func New() (*App, func(), error) {
 
 		faqservice.New,
 		chatservice.New,
+		feedbackservice.New,
 
+		pg.NewFeedbackStore,
 		pg.NewFaqStore,
 		chatapi.New,
 		classifierapi.New,
@@ -39,6 +42,10 @@ func New() (*App, func(), error) {
 		wire.Bind(new(faqservice.FaqStore), new(*pg.FaqStore)),
 		wire.Bind(new(chatservice.ChatRepository), new(*chatapi.ChatService)),
 		wire.Bind(new(chatservice.ClassifierRepository), new(*classifierapi.ClassifierApi)),
+
+		wire.Bind(new(chatservice.MessageSaver), new(*pg.FeedbackStore)),
+		wire.Bind(new(feedbackservice.FeedbackSender), new(*pg.FeedbackStore)),
+		wire.Bind(new(feedbackservice.FeedbackStats), new(*pg.FeedbackStore)),
 	))
 }
 

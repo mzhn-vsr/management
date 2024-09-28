@@ -7,6 +7,7 @@ type ChatInvokeResponse struct {
 }
 
 type ChatInvokeAnswer struct {
+	Id     string
 	Answer string `json:"answer"`
 	Class1 string `json:"class_1"`
 	Class2 string `json:"class_2"`
