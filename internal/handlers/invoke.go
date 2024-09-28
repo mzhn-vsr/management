@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func Invoke(cs *chatservice.ChatService) echo.HandlerFunc {
+func Predict(cs *chatservice.ChatService) echo.HandlerFunc {
 
 	type request struct {
 		Input string `json:"question"`

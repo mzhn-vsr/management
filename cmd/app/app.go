@@ -14,8 +14,8 @@ func init() {
 	}
 }
 
-// @title Сервис базы знаний
-// @version 1.0
+//	@title		Сервис базы знаний
+//	@version	1.0
 func main() {
 	app, _, err := app.New()
 	if err != nil {

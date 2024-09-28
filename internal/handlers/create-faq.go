@@ -9,6 +9,20 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type CreateFaqRes struct {
+	Id string `json:"id"`
+}
+
+// Создание записи в базе знаний
+//
+//	@Summary	Создание записи в БЗ
+//
+//	@Param		input	body	dto.FaqEntryCreate	true	"input body"
+//
+//	@Tags		faq
+//	@Success	200	{object}	CreateFaqRes
+//	@Failure	500	{object}	InternalError
+//	@Router		/faq [post]
 func CreateFaq(faqsvc *faqservice.FaqService) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		log := slog.With(slog.String("handler", "CreateFaq"))

@@ -58,8 +58,8 @@ func (a *App) initApp() {
 	a.app.GET("/faq/:id", handlers.FindFaq(a.faqsvc))
 	a.app.DELETE("/faq/:id", handlers.DeleteFaq(a.faqsvc))
 
-	a.app.POST("/predict", handlers.Predict(a.chatsvc))
 	a.app.POST("/invoke", handlers.Invoke(a.chatsvc))
+	a.app.POST("/predict", handlers.Predict(a.chatsvc))
 
 	a.app.PUT("/feedback", handlers.SendFeedback(a.feedbacksvc))
 	a.app.GET("/feedback", handlers.FeedbackStats(a.feedbacksvc))

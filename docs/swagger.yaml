@@ -1,6 +1,49 @@
+definitions:
+  dto.FaqEntryCreate:
+    properties:
+      answer:
+        type: string
+      classifier1:
+        type: string
+      classifier2:
+        type: string
+      question:
+        type: string
+    type: object
+  handlers.CreateFaqRes:
+    properties:
+      id:
+        type: string
+    type: object
+  handlers.InternalError:
+    properties:
+      error:
+        type: string
+    type: object
 info:
   contact: {}
   title: Сервис базы знаний
   version: "1.0"
-paths: {}
+paths:
+  /faq:
+    post:
+      parameters:
+      - description: input body
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.FaqEntryCreate'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.CreateFaqRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.InternalError'
+      summary: Создание записи в БЗ
+      tags:
+      - faq
 swagger: "2.0"

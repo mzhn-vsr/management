@@ -16,6 +16,9 @@ run:
 wire-gen:
 	wire ./internal/app/
 
+swag:
+	swag init -g cmd/app/app.go
+
 gen:
 	make wire-gen
 

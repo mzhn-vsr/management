@@ -22,6 +22,7 @@ import (
 
 import (
 	_ "github.com/jackc/pgx/stdlib"
+	_ "mzhn/management/docs"
 )
 
 // Injectors from wire.go:
