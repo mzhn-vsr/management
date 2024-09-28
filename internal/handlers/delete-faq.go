@@ -10,6 +10,13 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// @Summary	Удаление записи из БЗ
+//
+// @Param		id	path	int	true	"faq question id"
+// @Tags		faq
+// @Success	200	{object}	CreateFaqRes
+// @Failure	500	{object}	InternalError
+// @Router		/faq/{id} [delete]
 func DeleteFaq(faqsvc *faqservice.FaqService) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		log := slog.With(slog.String("handler", "UpdateFaq"))

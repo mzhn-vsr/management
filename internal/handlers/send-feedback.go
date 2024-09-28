@@ -16,6 +16,14 @@ func SendFeedback(sender *feedbackservice.FeedbackService) echo.HandlerFunc {
 		IsUseful bool   `json:"isUseful"`
 	}
 
+	// @Summary	Отправка фидбека
+	//
+	// @Tags		feedback
+	// @Success	200	{object} response
+	// @Failure	400	{object}	InternalError
+	// @Failure	404	{object}	InternalError
+	// @Failure	500	{object}	InternalError
+	// @Router		/feedback [put]
 	return func(c echo.Context) error {
 		var req request
 

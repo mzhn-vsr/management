@@ -8,6 +8,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// @Summary	Получение общей статистики по фидбеку
+//
+// @Tags		feedback
+// @Success	200	{object} dto.FeedbackStats
+// @Failure	500	{object}	InternalError
+// @Router		/feedback [get]
 func FeedbackStats(svc *feedbackservice.FeedbackService) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()

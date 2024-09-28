@@ -10,6 +10,32 @@ definitions:
       question:
         type: string
     type: object
+  dto.FeedbackStats:
+    properties:
+      negative:
+        type: integer
+      positive:
+        type: integer
+      total:
+        type: integer
+    type: object
+  entity.FaqEntry:
+    properties:
+      answer:
+        type: string
+      classifier1:
+        type: string
+      classifier2:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      question:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   handlers.CreateFaqRes:
     properties:
       id:
@@ -20,12 +46,59 @@ definitions:
       error:
         type: string
     type: object
+  handlers.ListFaqRes:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/entity.FaqEntry'
+        type: array
+      total:
+        type: integer
+    type: object
+  handlers.PredictReq:
+    properties:
+      question:
+        type: string
+    type: object
+  handlers.PredictRes:
+    properties:
+      answer:
+        type: string
+      class_1:
+        type: string
+      class_2:
+        type: string
+    type: object
 info:
   contact: {}
   title: Сервис базы знаний
   version: "1.0"
 paths:
   /faq:
+    get:
+      parameters:
+      - description: input body
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - description: input body
+        in: query
+        name: limit
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ListFaqRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.InternalError'
+      summary: Получение списка вопрос-ответ из базы знаний
+      tags:
+      - faq
     post:
       parameters:
       - description: input body
@@ -46,4 +119,95 @@ paths:
       summary: Создание записи в БЗ
       tags:
       - faq
+    put:
+      responses:
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.InternalError'
+      summary: Обновление записи в базе знаний
+      tags:
+      - faq
+  /faq/{id}:
+    delete:
+      parameters:
+      - description: faq question id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.CreateFaqRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.InternalError'
+      summary: Удаление записи из БЗ
+      tags:
+      - faq
+    get:
+      parameters:
+      - description: faq id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.FeedbackStats'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.InternalError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.InternalError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.InternalError'
+      summary: Поиск конкретной записи вопрос-ответ из базы знаний
+      tags:
+      - faq
+  /feedback:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.FeedbackStats'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.InternalError'
+      summary: Получение общей статистики по фидбеку
+      tags:
+      - feedback
+  /predict:
+    post:
+      parameters:
+      - description: input body
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.PredictReq'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.PredictRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.InternalError'
+      summary: Предикт ответа на вопрос
+      tags:
+      - feedback
 swagger: "2.0"

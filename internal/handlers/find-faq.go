@@ -10,6 +10,15 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// @Summary	Поиск конкретной записи вопрос-ответ из базы знаний
+//
+// @Param		id	path	int	true	"faq id"
+// @Tags		faq
+// @Success	200	{object} dto.FeedbackStats
+// @Failure	401	{object}	InternalError
+// @Failure	404	{object}	InternalError
+// @Failure	500	{object}	InternalError
+// @Router		/faq/{id} [get]
 func FindFaq(faqsvc *faqservice.FaqService) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		log := slog.With(slog.String("handler", "UpdateFaq"))

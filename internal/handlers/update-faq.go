@@ -9,6 +9,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// @Summary	Обновление записи в базе знаний
+//
+// @Tags		faq
+// @Failure	500	{object}	InternalError
+// @Router		/faq [put]
 func UpdateFaq(faqsvc *faqservice.FaqService) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		log := slog.With(slog.String("handler", "UpdateFaq"))

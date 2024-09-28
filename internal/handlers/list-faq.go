@@ -3,6 +3,7 @@ package handlers
 import (
 	"log/slog"
 	"mzhn/management/internal/dto"
+	"mzhn/management/internal/entity"
 	"mzhn/management/internal/lib/logger/sl"
 	"mzhn/management/internal/services/faqservice"
 	"strconv"
@@ -10,6 +11,19 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type ListFaqRes struct {
+	Items []entity.FaqEntry `json:"items"`
+	Total uint64            `json:"total"`
+}
+
+// @Summary	Получение списка вопрос-ответ из базы знаний
+//
+// @Param		offset	query int	true	"input body"
+// @Param		limit	query int	true	"input body"
+// @Tags		faq
+// @Success	200	{object} ListFaqRes
+// @Failure	500	{object}	InternalError
+// @Router		/faq [get]
 func ListFaq(faqsvc *faqservice.FaqService) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		log := slog.With(slog.String("handler", "ListFaq"))

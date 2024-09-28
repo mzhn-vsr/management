@@ -16,6 +16,7 @@ func Invoke(cs *chatservice.ChatService) echo.HandlerFunc {
 		FeedbackId string `json:"feedbackId"`
 		Answer     string `json:"answer"`
 	}
+
 	return func(c echo.Context) error {
 		var req request
 

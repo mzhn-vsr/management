@@ -16,6 +16,56 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/faq": {
+            "get": {
+                "tags": [
+                    "faq"
+                ],
+                "summary": "Получение списка вопрос-ответ из базы знаний",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "input body",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "input body",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ListFaqRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.InternalError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "faq"
+                ],
+                "summary": "Обновление записи в базе знаний",
+                "responses": {
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.InternalError"
+                        }
+                    }
+                }
+            },
             "post": {
                 "tags": [
                     "faq"
@@ -47,6 +97,133 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/faq/{id}": {
+            "get": {
+                "tags": [
+                    "faq"
+                ],
+                "summary": "Поиск конкретной записи вопрос-ответ из базы знаний",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "faq id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.FeedbackStats"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.InternalError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.InternalError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.InternalError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "faq"
+                ],
+                "summary": "Удаление записи из БЗ",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "faq question id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.CreateFaqRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.InternalError"
+                        }
+                    }
+                }
+            }
+        },
+        "/feedback": {
+            "get": {
+                "tags": [
+                    "feedback"
+                ],
+                "summary": "Получение общей статистики по фидбеку",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.FeedbackStats"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.InternalError"
+                        }
+                    }
+                }
+            }
+        },
+        "/predict": {
+            "post": {
+                "tags": [
+                    "feedback"
+                ],
+                "summary": "Предикт ответа на вопрос",
+                "parameters": [
+                    {
+                        "description": "input body",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.PredictReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.PredictRes"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.InternalError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -67,6 +244,46 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.FeedbackStats": {
+            "type": "object",
+            "properties": {
+                "negative": {
+                    "type": "integer"
+                },
+                "positive": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "entity.FaqEntry": {
+            "type": "object",
+            "properties": {
+                "answer": {
+                    "type": "string"
+                },
+                "classifier1": {
+                    "type": "string"
+                },
+                "classifier2": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "question": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "handlers.CreateFaqRes": {
             "type": "object",
             "properties": {
@@ -79,6 +296,42 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.ListFaqRes": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.FaqEntry"
+                    }
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "handlers.PredictReq": {
+            "type": "object",
+            "properties": {
+                "question": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.PredictRes": {
+            "type": "object",
+            "properties": {
+                "answer": {
+                    "type": "string"
+                },
+                "class_1": {
+                    "type": "string"
+                },
+                "class_2": {
                     "type": "string"
                 }
             }
