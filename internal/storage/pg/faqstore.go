@@ -231,11 +231,9 @@ func (s *FaqStore) Delete(ctx context.Context, id string) error {
 		return err
 	}
 
+	log.Debug("executing", slog.String("query", query), slog.Any("args", args))
+
 	if _, err := s.db.ExecContext(ctx, query, args...); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			log.Debug("faq entry not found", slog.String("id", id))
-			return storage.ErrNoFaqEntry
-		}
 		log.Warn("cannot query ", sl.Err(err))
 		return err
 	}

@@ -22,7 +22,7 @@ func DeleteFaq(faqsvc *faqservice.FaqService) echo.HandlerFunc {
 		log := slog.With(slog.String("handler", "UpdateFaq"))
 
 		id := c.Param("id")
-		if id != "" {
+		if id == "" {
 			return c.JSON(echo.ErrBadRequest.Code, &payload{
 				"error": "empty id",
 			})
